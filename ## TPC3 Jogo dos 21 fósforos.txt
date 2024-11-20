@@ -1,0 +1,124 @@
+## TPC3: Jogo dos 21 fósforos
+
+Desenvolve em Python o código necessário para o jogo dos 21 fósforos: 
+
+### O jogo
+
+* No início do jogo, há 21 fósforos;
+* Cada jogador (computador ou utilizador), pode tirar 1, 2, 3 ou 4 fósforos quando for a sua vez de jogar;
+* Os jogadores jogam alternadamente;
+* **Quem tirar o último fósforo perde!**
+
+### O programa 
+
+* O jogo deverá ter dois modos: o jogador joga em primeiro lugar e o computador começa a jogar em segundo lugar e, no segundo modo, o computador começa em primeiro; 
+* Quando o computador começa a jogar em segundo lugar, deve ganhar sempre o jogo;
+* Quando o computador começa a jogar em primeiro lugar, se o utilizador cometer um erro de cálculo, o computador deverá passar para a posição de vencedor e ganhar o jogo.
+
+
+Aluno: José Carlos de Barros e Sousa - A5851
+
+
+CÓDIGO
+
+
+import random
+
+def computador_joga(fosforos, computador_primeiro):
+    if computador_primeiro:
+        jogada = (fosforos - 1) % 5 or random.choice([1, 2, 3, 4])
+    else:
+        jogada = (fosforos - 1) % 5 or random.choice([1, 2, 3, 4])
+
+    return min(max(jogada, 1), 4)
+
+
+###	A função recebe dois parâmetros:
+	fosforos: O número de fósforos restantes no jogo.
+	computador_primeiro: Um booleano que indica se o computador é o primeiro a jogar.
+	Retorna o número de fósforos que o computador decide remover, entre 1 e 4.
+	
+	A lógica central do jogo está nesta linha. A estratégia do computador baseia-se no conceito de "números seguros" no jogo dos fósforos:
+	Números seguros: 1, 6, 11, 16, ... (números na forma 5n + 1).
+	Se o computador consegue deixar o número de fósforos restante em um "número seguro" após sua jogada, ele pode garantir a vitória, assumindo que jogará perfeitamente.
+	(fosforos - 1) % 5: Calcula quantos fósforos devem ser removidos para deixar o total em um número seguro.
+
+
+def jogador_joga():
+    while True:
+        try:
+            jogada = int(input("Quantos fósforos você quer retirar (1-4)? "))
+            if jogada in [1, 2, 3, 4]:
+                return jogada
+            else:
+                print("Escolha um número entre 1 e 4.")
+        except ValueError:
+            print("Por favor, insira um número válido.")
+
+
+###	Solicita ao jogador que insira um número entre 1 e 4 (a quantidade de fósforos a ser removida).
+	Verifica se a entrada é válida:
+		a) Deve ser um número inteiro;
+		b) Deve estar no intervalo permitido (1, 2, 3 ou 4);
+	Se for válida, retorna o número escolhido, caso contrário, exibe mensagens de erro apropriadas e pede que o jogador tente novamente.
+
+
+def jogar_21_fosforos():
+    print("Bem-vindo ao Jogo dos 21 Fósforos!")
+    print("Modo 1: Jogador começa\nModo 2: Computador começa")
+    modo = int(input("Escolha o modo (1 ou 2): "))
+    print(modo)
+
+
+
+###	O programa começa com uma mensagem de boas-vindas e apresenta dois modos:
+	Modo 1: O jogador começa.
+	Modo 2: O computador começa.
+	A escolha é feita pelo jogador digitando 1 ou 2, que é armazenado na variável modo.
+
+    fosforos = 21
+    computador_primeiro = (modo == 2)
+
+
+###	fosforos: Inicializa o número total de fósforos (21).
+	computador_primeiro: Define quem joga primeiro com base no modo escolhido:
+		a) True: Computador joga primeiro.
+		b) False: Jogador joga primeiro.
+
+
+    while fosforos > 0:
+        print(f"\nFósforos restantes: {fosforos}")        
+        if not computador_primeiro:
+            jogada_jogador = jogador_joga()
+            fosforos -= jogada_jogador
+            print(f"Você retirou {jogada_jogador} fósforos.")
+            if fosforos == 0:
+                print("Você perdeu! O computador ganhou.")
+                break
+            computador_primeiro = True
+        else:           
+            jogada_computador = computador_joga(fosforos, computador_primeiro=(modo == 2))
+            fosforos -= jogada_computador
+            print(f"O computador retirou {jogada_computador} fósforos.")
+            if fosforos == 0:
+                print("O computador perdeu! Você ganhou.")
+                break
+            computador_primeiro = False
+
+
+###	Se não é o turno do computador, o jogador joga:
+	jogador_joga(): Solicita a entrada do jogador para escolher entre 1 e 4 fósforos.
+	Atualização de fósforos: Subtrai a jogada do número total de fósforos.
+	Condição de derrota: Se o jogador retirou os últimos fósforos (fosforos == 0), ele perde, e o jogo termina.
+	Troca de turno: Define computador_primeiro = True para alternar o turno.
+
+
+	Se é o turno do computador, ele joga:
+	computador_joga(): Calcula a jogada do computador com base nos fósforos restantes.
+	Atualização de fósforos: Subtrai a jogada do número total de fósforos.
+	Condição de derrota: Se o computador retirou os últimos fósforos (fosforos == 0), ele perde, e o jogador vence.
+	Troca de turno: Define computador_primeiro = False para alternar o turno.
+
+
+
+jogar_21_fosforos()
